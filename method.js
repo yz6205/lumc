@@ -12,7 +12,7 @@ funcList["EVAL"] = eval
 funcList["REPEAT"] = function(param) {
   const sep = "@@,", sign = "@@$"
   let template = param.split(sep)[0]
-  let lines = param.split(sep)[1]
+  let lines = param.split(sep)[1].split('\n')
   let result = []
   for (let line of lines) {
     line = line.trim()
