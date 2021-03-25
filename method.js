@@ -23,10 +23,18 @@ function installExtension() {
   for (let filename of extList) {
     if (filename.endsWith('.js')) {
       const extObj = require(extPath + filename) 
-      if (extObj.funcList) {
+      if (extObj.funcList instanceof Map) {
         extObj.funcList.forEach((value, key) => {
-          funcList[key] = value 
+          if (value instanceof Function) {
+            funcList[key] = value 
+          }
         })
+      } else if (extObj.funcList instanceof Object) {
+        for (let [key, value] of Object.entries(extObj.funcList)) {
+          if (value instanceof Function) {
+            funcList[key] = value
+          }
+        }
       }
     }
   }
