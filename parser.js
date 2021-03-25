@@ -1,7 +1,6 @@
 "use strict"
 
-const labelReg = /{{[^{}]*}}/
-const forReg = /<<[^<>]*>>\s*<</
+const forReg = /<<((?!>>).)*>>\s*<</
 const forRegMid = />>\s*<</
 
 const mt = require('./method.js')
@@ -61,6 +60,34 @@ function replaceLabel(content, match) {
   return content.substr(0,start) + expanded + content.substr(end)
 }
 
+function stringMatchLabel(str) {
+  let beginId = -1
+  let inMathJax = false
+  for (let i=0; i<str.length-1; i++)  {
+    let pos = str.substr(i,2)
+    if (pos[0] == '$') {
+      inMathJax = !inMathJax
+      i++
+    }
+    if (!inMathJax) {
+      if (pos == '{{') {
+        beginId = i
+      } else if (pos == '}}') {
+        if (beginId != -1) {
+          let res = [str.slice(beginId, i+2)]
+          res['index'] = beginId
+          return res
+        }
+      }
+    }
+  }
+  return null
+}
+
+String.prototype.matchLabel = function() {
+  return stringMatchLabel(this)
+}
+
 function parse(content) {
   if (!content) {
     return ""
@@ -70,7 +97,7 @@ function parse(content) {
     content = replaceFor(content, matchFor)
     return parse(content)
   }
-  let matchLabel = content.match(labelReg)
+  let matchLabel = content.matchLabel()
   if (matchLabel) {
     content = replaceLabel(content, matchLabel)
     return parse(content)
