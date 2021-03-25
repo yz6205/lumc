@@ -1,10 +1,9 @@
 "use strict"
 
-const extPath = './ext/'
+const extPath = __dirname + '/ext/'
 
 const ut = require('./utility.js')
 const fs = require('fs')
-const { getUnpackedSettings } = require('http2')
 
 let funcList = new Map()
 
