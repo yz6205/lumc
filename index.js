@@ -32,10 +32,10 @@ function indx() {
   }
 
   function gen(templateName) {
-    if (!listFileName) {
-      listFileName = "theme/map.conf"
+    if (!templateName) {
+      templateName = "theme/map.conf"
     }
-    console.log(pr.parse(ut.readFile(listFileName)))
+    console.log(pr.parse(ut.readFile(templateName)))
   }
 
   let command = process.argv[2]
