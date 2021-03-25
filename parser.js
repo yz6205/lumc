@@ -35,7 +35,7 @@ function replaceFor(content, match) {
   let loopRange = loops.substr(0,loopSpliter['index']).trim()
   let loopBody = loops.substr(loopSpliter['index'] + loopSpliter[0].length).trim()
 
-  let ranges = loopRange.split(' ')
+  let ranges = parse(loopRange).split(/\s+/)
   let loopId = ranges[0]
   ranges = ranges.slice(1)
   
@@ -89,16 +89,20 @@ String.prototype.matchLabel = function() {
 }
 
 function parse(content) {
+  // log('#-----------------#')
+  // log(content)
   if (!content) {
     return ""
   }
   let matchFor = content.match(forReg)
   if (matchFor) {
+    // log("hit for")
     content = replaceFor(content, matchFor)
     return parse(content)
   }
   let matchLabel = content.matchLabel()
   if (matchLabel) {
+    // log("hit label")
     content = replaceLabel(content, matchLabel)
     return parse(content)
   }
