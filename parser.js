@@ -4,8 +4,8 @@ const forReg = /<<((?!>>).)*>>\s*<</
 const forRegMid = />>\s*<</
 
 const mt = require('./method.js')
-const log = console.error
-// const log = function(){}
+// const log = console.error
+const log = function(){}
 
 function replaceFor(content, match) {
   let bodyStart = match['index'] + match[0].length
@@ -49,15 +49,10 @@ function replaceFor(content, match) {
 }
 
 function replaceLabel(content, match) {
-  // log("#--replaceLabel--#")
   let label = match[0].substr(2, match[0].length - 4)
   let start = match['index'], end = start + match[0].length
   let funcName = label.match(/^\w*/)[0]
   let expanded = match[0].slice(2, match[0].length-2)
-  // log(`#label#\n${label}`)
-  // log(`#funcName#='${funcName}'`)
-  // log(`#expanded#\n${expanded}`)
-  // log(mt.funcList[funcName])
   if (mt.funcList[funcName]) {
     let param = label.substr(funcName.length).trim()
     expanded = mt.funcList[funcName](param)
@@ -68,13 +63,16 @@ function replaceLabel(content, match) {
 function stringMatchLabel(str) {
   let beginId = -1
   let inMathJax = false
+  let inCode = false
   for (let i=0; i<str.length-1; i++)  {
     let pos = str.substr(i,2)
     if (pos[0] == '$') {
       inMathJax = !inMathJax
       i++
+    } else if (pos[0] == '`') {
+      inCode = !inCode
     }
-    if (!inMathJax) {
+    if (!inMathJax && !inCode) {
       if (pos == '{{') {
         beginId = i
       } else if (pos == '}}') {
@@ -94,20 +92,20 @@ String.prototype.matchLabel = function() {
 }
 
 function parse(content) {
-  // log('#-----------------#')
-  // log(content)
+  log('#-----------------#')
+  log(content)
   if (!content) {
     return ""
   }
   let matchFor = content.match(forReg)
   if (matchFor) {
-    // log("hit for")
+    log("hit for")
     content = replaceFor(content, matchFor)
     return parse(content)
   }
   let matchLabel = content.matchLabel()
   if (matchLabel) {
-    // log("hit label")
+    log("hit label")
     content = replaceLabel(content, matchLabel)
     return parse(content)
   }
