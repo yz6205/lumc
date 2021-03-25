@@ -35,7 +35,7 @@ function indx() {
     if (!templateName) {
       templateName = "theme/map.conf"
     }
-    console.log(pr.parse(ut.readFile(templateName)))
+    pr.parse(ut.readFile(templateName))
   }
 
   let command = process.argv[2]
