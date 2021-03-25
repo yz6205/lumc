@@ -34,6 +34,5 @@ function installExtension() {
 }
 
 installExtension()
-console.log(funcList)
 
 exports.funcList = funcList
