@@ -15,27 +15,43 @@ Description:
 generate and update following rules in the given configure file
 
 Arguments:
-  configurePath configure file path, default to "modules/map.conf"
+  configurePath configure file path, default to "theme/map.conf"
 `
 }
 
-const pr = require('./parser')
+function indx() {
+  const ut = require('./utility')
+  const pr = require('./parser')
 
-function help(method) {
-  if (HelpInfo[method]) {
-    console.log(HelpInfo[method])
-  } else {
-    console.log(HelpInfo[method])
+  function help(method) {
+    if (HelpInfo[method]) {
+      console.log(HelpInfo[method])
+    } else {
+      console.log(HelpInfo[method])
+    }
+  }
+
+  function gen(templateName) {
+    if (!listFileName) {
+      listFileName = "theme/map.conf"
+    }
+    console.log(pr.parse(ut.readFile(listFileName)))
+  }
+
+  let command = process.argv[2]
+  switch (command) {
+    case undefined:
+    case "help":
+      help(process.argv[3])
+      break
+      
+    case "gen":
+      gen(process.argv[3])
+      break
+
+    default:
+      help()
   }
 }
 
-let command = process.argv[2]
-switch (command) {
-  case undefined:
-  case "help":
-    help(process.argv[3])
-    break
-
-  default:
-    help()
-}
+module.exports = indx

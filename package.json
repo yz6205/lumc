@@ -7,6 +7,9 @@
     "test": "node test/test.js"
   },
   "author": "JacderZhang",
+  "bin": {
+    "lumc": "bin/lumc"
+  },
   "license": "MIT",
   "dependencies": {
     "crypto-js": "^4.0.0",
