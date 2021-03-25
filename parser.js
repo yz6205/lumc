@@ -49,10 +49,15 @@ function replaceFor(content, match) {
 }
 
 function replaceLabel(content, match) {
+  // log("#--replaceLabel--#")
   let label = match[0].substr(2, match[0].length - 4)
   let start = match['index'], end = start + match[0].length
   let funcName = label.match(/^\w*/)[0]
-  let expanded = match[0]
+  let expanded = match[0].slice(2, match[0].length-2)
+  // log(`#label#\n${label}`)
+  // log(`#funcName#='${funcName}'`)
+  // log(`#expanded#\n${expanded}`)
+  // log(mt.funcList[funcName])
   if (mt.funcList[funcName]) {
     let param = label.substr(funcName.length).trim()
     expanded = mt.funcList[funcName](param)
