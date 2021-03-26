@@ -3,7 +3,7 @@
 const extPath = __dirname + '/ext/'
 
 const ut = require('./utility.js')
-const { CMD_SET, CMD_GET } = require('./db.js')
+const { CMD_SET, CMD_GET, CMD_GETS_START } = require('./db.js')
 const fs = require('fs')
 
 function checkDirSync(filename) {
@@ -25,11 +25,13 @@ let funcList = new Map()
 // built-in functions
 funcList["NULL"] = ()=>""
 funcList["ECHO"] = (s)=>s
+funcList['LOG'] = function(param) { console.error(param); return "" }
 funcList["OPEN"] = ut.readFile
 funcList["EVAL"] = eval
 funcList["WRITE"] = writeTo
 funcList["SET"] = CMD_SET
 funcList["GET"] = CMD_GET
+funcList["GETS_START"] = CMD_GETS_START
 
 function installExtension() {
   let extList = []
