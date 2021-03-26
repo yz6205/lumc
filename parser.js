@@ -73,9 +73,9 @@ function stringMatchLabel(str) {
       inCode = !inCode
     }
     if (!inMathJax && !inCode) {
-      if (pos == '{{') {
+      if (pos == '[{') {
         beginId = i
-      } else if (pos == '}}') {
+      } else if (pos == '}]') {
         if (beginId != -1) {
           let res = [str.slice(beginId, i+2)]
           res['index'] = beginId
