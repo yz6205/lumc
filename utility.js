@@ -14,6 +14,7 @@ function readFile(filename) {
 
 String.prototype.splitTwo = function(pat) {
   let match = this.match(pat)
+  if (!match) { return [this, ""] }
   let a = this.substr(0, match["index"])
   let b = this.substr(match["index"] + match[0].length)
   return [a, b]
