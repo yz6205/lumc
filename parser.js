@@ -45,7 +45,7 @@ function replaceFor(content, match) {
       result.push(loopBody.split(loopId).join(s)) 
     }
   }
-  return prefix + result.join('\n') + suffix
+  return prefix + parse(result.join('\n')) + suffix
 }
 
 function replaceLabel(content, match) {
