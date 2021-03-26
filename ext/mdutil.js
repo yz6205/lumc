@@ -2,7 +2,9 @@
 
 const kramed = require('kramed')
 const yaml = require('yaml')
+const {} = require('../utility')
 
+let yamlVars = new Object()
 
 function parseMd(content) {
   content = content.split('---')
@@ -26,20 +28,18 @@ function getMapItem(list, index) {
       return ""
     }
   }
-  if (current instanceof Object) {
-    current = Object.keys(current)
-  }
   if (current instanceof Array) {
     current = current.join('\n')
+  } else if (current instanceof Object) {
+    current = Object.keys(current).join('\n')
   }
   return current
 }
 
-function getInfo(param) {
+function getMdInfo(param) {
   try {
-    param = param.trim()
-    let key = param.split(/\s+/)[0]
-    let cont = param.split(key).slice(1).join(key).split('---')[1]
+    let [key, cont] = param.trim().splitTwo(/\s+/)
+    cont = cont.split('---')[1].split('\t').join('  ')
     return getMapItem(yaml.parse(cont),key)
   } catch (err) {
     console.error(`Warning: parsing yaml failed: ${err['message']}`)
@@ -47,20 +47,28 @@ function getInfo(param) {
   }
 }
 
-function yamlConfig(param) {
+function yamlSet(param) {
+  let [key, cont] = param.trim().splitTwo(/\s+/)
   try {
-    param = param.trim()
-    let key = param.split(/\s+/)[0]
-    let cont = param.split(key).slice(1).join(key)
-    return getMapItem(yaml.parse(cont),key)
-  } catch (err) {
+    yamlVars[key] = yaml.parse(cont.split('\t').join('  '))
+  } catch(err) {
     console.error(`Warning: parsing yaml failed: ${err['message']}`)
+  }
+  return ""
+}
+
+function yamlGet(param) {
+  let [id, key] = param.trim().splitTwo(/\s+/)
+  if (!yamlVars[id]) {
+    console.error(`Warning: yaml config item '${id}' not found`)
     return ""
   }
+  return getMapItem(yamlVars[id], key)
 }
 
 let funcList = new Map()
 funcList.set('MD', parseMd)
-funcList.set('MDINFO', getInfo)
-funcList.set('YAML', yamlConfig)
+funcList.set('MDINFO', getMdInfo)
+funcList.set('YAMLSET', yamlSet)
+funcList.set('YAMLGET', yamlGet)
 exports.funcList = funcList
