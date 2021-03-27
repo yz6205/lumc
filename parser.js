@@ -98,18 +98,18 @@ function parse(content) {
     return ""
   }
   let matchFor = content.match(forReg)
-  if (matchFor) {
+  let matchLabel = content.matchLabel()
+  if (matchFor && (!matchLabel || matchLabel['index'] > matchFor['index'])) {
     log("hit for")
     content = replaceFor(content, matchFor)
     return parse(content)
-  }
-  let matchLabel = content.matchLabel()
-  if (matchLabel) {
+  } else if (matchLabel) {
     log("hit label")
     content = replaceLabel(content, matchLabel)
     return parse(content)
+  } else{
+    return content
   }
-  return content
 }
 
 exports.parse = parse
