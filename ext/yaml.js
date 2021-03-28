@@ -9,6 +9,7 @@ function getMapItem(list, index) {
   index = index.trim().split('|')
   let current = list
   for (let id of index) {
+    id = id.trim()
     if (current[id]) {
       current = current[id]
     } else {
