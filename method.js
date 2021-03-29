@@ -31,7 +31,6 @@ funcList["EVAL"] = eval
 funcList["WRITE"] = writeTo
 funcList["SET"] = CMD_SET
 funcList["GET"] = CMD_GET
-funcList["GETS_START"] = CMD_GETS_START
 
 function installExtension(extPath) {
   let extList = []
