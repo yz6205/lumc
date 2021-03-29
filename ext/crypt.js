@@ -3,7 +3,6 @@
 require('../utility')
 const CryptoJS = require("crypto-js")
 
-let funcList = new Map()
 
 function MD5(param) {
   return CryptoJS.MD5(param.trim()).toString()
@@ -19,7 +18,8 @@ function genPassword(param) {
   return CryptoJS.MD5(param.trim()).toString().substr(0,8)
 }
 
-funcList.set("MD5", MD5)
-funcList.set("AES", AES)
-funcList.set("GENPASSWD", genPassword)
+let funcList = {}
+funcList["MD5"] = MD5
+funcList["AES"] = AES
+funcList["GENPASSWD"] = genPassword
 exports.funcList = funcList

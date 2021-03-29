@@ -33,33 +33,23 @@ funcList["SET"] = CMD_SET
 funcList["GET"] = CMD_GET
 funcList["GETS_START"] = CMD_GETS_START
 
-function installExtension() {
+function installExtension(extPath) {
   let extList = []
   try {
     extList = fs.readdirSync(extPath) 
-  } catch (err) {
-    return
-  }
+  } catch (err) { return }
   for (let filename of extList) {
     if (filename.endsWith('.js')) {
       const extObj = require(extPath + filename) 
-      if (extObj.funcList instanceof Map) {
-        extObj.funcList.forEach((value, key) => {
-          if (value instanceof Function) {
-            funcList[key] = value 
-          }
-        })
-      } else if (extObj.funcList instanceof Object) {
+      if (extObj.funcList) {
         for (let [key, value] of Object.entries(extObj.funcList)) {
-          if (value instanceof Function) {
-            funcList[key] = value
-          }
+          if (value instanceof Function) { funcList[key] = value }
         }
       }
     }
   }
 }
 
-installExtension()
+installExtension(__dirname + '/ext/')
 
 exports.funcList = funcList

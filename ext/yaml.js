@@ -43,7 +43,7 @@ function yamlGet(param) {
   return getMapItem(yamlVars[id], key)
 }
 
-let funcList = new Map()
-funcList.set('YAMLSET', yamlSet)
-funcList.set('YAMLGET', yamlGet)
+let funcList = {}
+funcList['YAMLSET'] = yamlSet
+funcList['YAMLGET'] = yamlGet
 exports.funcList = funcList

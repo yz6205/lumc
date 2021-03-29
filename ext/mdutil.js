@@ -45,7 +45,7 @@ function getMdInfo(param) {
   }
 }
 
-let funcList = new Map()
-funcList.set('MD', parseMd)
-funcList.set('MDINFO', getMdInfo)
+let funcList = {}
+funcList['MD'] = parseMd
+funcList['MDINFO'] = getMdInfo
 exports.funcList = funcList
