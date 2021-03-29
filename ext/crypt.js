@@ -15,6 +15,11 @@ function AES(param) {
   return CryptoJS.AES.encrypt(content, key, {iv: key}).toString()
 }
 
+function genPassword(param) {
+  return CryptoJS.MD5(param.trim()).toString().substr(0,8)
+}
+
 funcList.set("MD5", MD5)
 funcList.set("AES", AES)
+funcList.set("GENPASSWD", genPassword)
 exports.funcList = funcList
