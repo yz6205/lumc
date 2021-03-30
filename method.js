@@ -1,9 +1,7 @@
 "use strict"
 
-const extPath = __dirname + '/ext/'
-
 const ut = require('./utility.js')
-const { CMD_SET, CMD_GET, CMD_GETS_START } = require('./db.js')
+const { CMD_SET, CMD_GET } = require('./db.js')
 const fs = require('fs')
 
 function checkDirSync(filename) {
@@ -50,5 +48,6 @@ function installExtension(extPath) {
 }
 
 installExtension(__dirname + '/ext/')
+installExtension('theme/ext')
 
 exports.funcList = funcList
