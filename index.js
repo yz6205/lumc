@@ -1,3 +1,5 @@
+"use strict"
+
 const HelpInfo = {
 undefined:
 `usage: lumc <command>
