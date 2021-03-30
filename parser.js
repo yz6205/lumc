@@ -1,115 +1,110 @@
 "use strict"
 
-const forReg = /<<((?!>>).)*>>\s*<</
-const forRegMid = />>\s*<</
+const { funcList } = require("./method")
+const {} = require("./utility")
 
-const mt = require('./method.js')
-// const log = console.error
-const log = function(){}
-
-function replaceFor(content, match) {
-  let bodyStart = match['index'] + match[0].length
-
-  // find matching '>>'
-  let forEnd = bodyStart
-  let braceCnt = 0
-  for (let i = bodyStart + 1; i < content.length; i++) {
-    let check = content.substr(i, 2)
-    if (check == '<<') {
-      braceCnt++
-    } else if (check == '>>') {
-      if (braceCnt == 0) {
-        forEnd = i
-        break
-      } else {
-        braceCnt--
+function getParsePos(content) {
+  let result = null
+  let index = 0
+  for (; index < content.length-1; index++) {
+    let current = content.substr(index, 2)
+    if (current == "[{") {
+      result = new Object
+      result["type"] = "label"
+      break
+    } else if (current == "<{") {
+      result = new Object
+      result["type"] = "loop"
+      break
+    }
+  }
+  if (!result) { return result }
+  result["prefix"] = content.substr(0, index)
+  index += 2
+  if (result["type"] == "label") {
+    let inLabelCnt = 1
+    let innerStart = index
+    for (; index < content.length-1; index++) {
+      let current = content.substr(index, 2)
+      if (current == "[{") { inLabelCnt++ }
+      else if (current == "}]") { 
+        inLabelCnt-- 
+        if (inLabelCnt == 0) { 
+          result["inner"] = content.slice(innerStart, index) 
+          break
+        }
       }
     }
-  }
-
-  // split the string
-  let prefix = content.substr(0,match['index'])
-  let suffix = content.substr(forEnd + 2)
-  let loops = content.slice(match['index']+2, forEnd)
-  let loopSpliter = loops.match(forRegMid)
-  let loopRange = loops.substr(0,loopSpliter['index']).trim()
-  let loopBody = loops.substr(loopSpliter['index'] + loopSpliter[0].length).trim()
-
-  let ranges = parse(loopRange).split(/\s+/)
-  let loopId = ranges[0]
-  ranges = ranges.slice(1)
-  
-  let result = []
-  for (let s of ranges) {
-    if (s != '') {
-      result.push(loopBody.split(loopId).join(s)) 
+  } else {
+    let inBracketCnt = 1
+    let rangeStart = index
+    for (; index < content.length-1; index++) {
+      let current = content.substr(index, 2)
+      if (current == "<{") { inBracketCnt++ }
+      else if (current == "}>") { 
+        inBracketCnt-- 
+        if (inBracketCnt == 0) {
+          result["range"] = content.slice(rangeStart, index)
+          break
+        }
+      }
     }
-  }
-  return prefix + parse(result.join('\n')) + suffix
-}
-
-function replaceLabel(content, match) {
-  let label = match[0].substr(2, match[0].length - 4)
-  let start = match['index'], end = start + match[0].length
-  let funcName = label.match(/^\w*/)[0]
-  let expanded = match[0].slice(2, match[0].length-2)
-  if (mt.funcList[funcName]) {
-    let param = label.substr(funcName.length).trim()
-    expanded = mt.funcList[funcName](param)
-  }
-  return content.substr(0,start) + expanded + content.substr(end)
-}
-
-function stringMatchLabel(str) {
-  let beginId = -1
-  let inMathJax = false
-  let inCode = false
-  for (let i=0; i<str.length-1; i++)  {
-    let pos = str.substr(i,2)
-    if (pos[0] == '$') {
-      inMathJax = !inMathJax
-      i++
-    } else if (pos[0] == '`') {
-      inCode = !inCode
-    }
-    if (!inMathJax && !inCode) {
-      if (pos == '[{') {
-        beginId = i
-      } else if (pos == '}]') {
-        if (beginId != -1) {
-          let res = [str.slice(beginId, i+2)]
-          res['index'] = beginId
-          return res
+    index += 2
+    inBracketCnt = 0
+    for (; index < content.length-1; index++) {
+      let current = content.substr(index, 2)
+      if (current == "<{") {
+        if (inBracketCnt == 0) { rangeStart = index + 2 }
+        inBracketCnt++ }
+      else if (current == "}>") { 
+        inBracketCnt-- 
+        if (inBracketCnt == 0) {
+          result["body"] = content.slice(rangeStart, index)
+          break 
         }
       }
     }
   }
-  return null
+  index += 2
+  result["suffix"] = content.substr(index)
+  return result
 }
 
-String.prototype.matchLabel = function() {
-  return stringMatchLabel(this)
+function treatLabel(content) {
+  let inner = parse(content["inner"]).trim()
+  let [funcName, param] = inner.splitTwo(/\s+/)
+  console.error(`funcName=${funcName}, param=${param}`)
+  if (funcList[funcName]) {
+    return parse(funcList[funcName](param))
+  } else {
+    return parse(inner)
+  }
+}
+
+function treatFor(content) {
+  let range = parse(content["range"]).trim()
+  let body = content["body"].trim()
+  let [id, loopList] = range.splitTwo(/\s+/)
+  loopList = loopList.split('\n')
+  let result = []
+  for (let value of loopList) {
+    value = value.trim()
+    if (value == "") { continue }
+    result.push(parse(body.split(id).join(value)))
+  }
+  return result.join("\n")
 }
 
 function parse(content) {
-  log('#-----------------#')
-  log(content)
-  if (!content) {
-    return ""
+  let pos = getParsePos(content)
+  if (!pos) { return content }
+  let replacement = ""
+  if (pos["type"] == "label") {
+    replacement = treatLabel(pos) 
+  } else {
+    replacement = treatFor(pos)
   }
-  let matchFor = content.match(forReg)
-  let matchLabel = content.matchLabel()
-  if (matchFor && (!matchLabel || matchLabel['index'] > matchFor['index'])) {
-    log("hit for")
-    content = replaceFor(content, matchFor)
-    return parse(content)
-  } else if (matchLabel) {
-    log("hit label")
-    content = replaceLabel(content, matchLabel)
-    return parse(content)
-  } else{
-    return content
-  }
+  return pos["prefix"] + replacement + parse(pos["suffix"])
 }
 
 exports.parse = parse
