@@ -73,7 +73,6 @@ function getParsePos(content) {
 function treatLabel(content) {
   let inner = parse(content["inner"]).trim()
   let [funcName, param] = inner.splitTwo(/\s+/)
-  console.error(`funcName=${funcName}, param=${param}`)
   if (funcList[funcName]) {
     return parse(funcList[funcName](param))
   } else {
