@@ -12,7 +12,7 @@ function checkDirSync(filename) {
 function writeTo(param) {
   param = param.trim()
   let dest = param.split(/\s+/)[0].trim()
-  let cont = param.substr(dest.length)
+  let cont = param.substr(dest.length).trim()
   checkDirSync(dest)
   fs.writeFileSync(dest, cont)
   return ""
