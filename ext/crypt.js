@@ -11,11 +11,15 @@ function MD5(param) {
 function AES(param) {
   let [password, content] = param.splitTwo(/\s+/)
   let key = CryptoJS.enc.Utf8.parse(password);
-  return CryptoJS.AES.encrypt(content, key, {iv: key}).toString()
+  return CryptoJS.AES.encrypt(content, key, {
+    iv: key,
+    mode: CryptoJS.mode.CBC,
+    padding: CryptoJS.pad.Pkcs7
+  }).toString()
 }
 
 function genPassword(param) {
-  return CryptoJS.MD5(param.trim()).toString().substr(0,8)
+  return CryptoJS.MD5(param.trim()).toString().substr(0,16)
 }
 
 let funcList = {}
