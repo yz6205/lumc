@@ -76,7 +76,7 @@ function treatLabel(content) {
   if (funcList[funcName]) {
     return parse(funcList[funcName](param))
   } else {
-    return parse(inner)
+    return `[{${inner}}]`
   }
 }
 
