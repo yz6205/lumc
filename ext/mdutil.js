@@ -35,6 +35,7 @@ function getMapItem(list, index) {
 }
 
 function getMdInfo(param) {
+  console.error(`Warning: deprecated method: "MDINFO", use "MDHEAD" instead`)
   try {
     let [key, cont] = param.trim().splitTwo(/\s+/)
     cont = cont.split('---')[1].split('\t').join('  ')
@@ -45,7 +46,17 @@ function getMdInfo(param) {
   }
 }
 
+function getMdHead(cont) {
+  try {
+    return cont.split('---')[1].split('\t').join('  ')
+  } catch (err) {
+    console.error(`Warning: parsing yaml failed: ${err['message']}`)
+    return ""
+  }
+}
+
 let funcList = {}
 funcList['MD'] = parseMd
 funcList['MDINFO'] = getMdInfo
+funcList['MDHEAD'] = getMdHead
 exports.funcList = funcList
