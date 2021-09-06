@@ -55,8 +55,21 @@ function getMdHead(cont) {
   }
 }
 
+function mdexpand(param) {
+  let [summary, detail] = param.splitTwo(/\s+/)
+  let res = 
+  `
+<details>
+<summary> <dt> ${summary} </dt> </summary>
+  ${parseMd(detail)}
+</details>
+  `.trim()
+  return res
+}
+
 let funcList = {}
 funcList['MD'] = parseMd
 funcList['MDINFO'] = getMdInfo
 funcList['MDHEAD'] = getMdHead
+funcList['MDEXPAND'] = mdexpand
 exports.funcList = funcList
