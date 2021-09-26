@@ -60,10 +60,10 @@ function mdexpand(param) {
   let res = 
   `
 <details>
-<summary> <dt> ${summary} </dt> </summary>
+<summary> ${summary} </summary>
   ${parseMd(detail)}
 </details>
-  `.trim()
+  `
   return res
 }
 
